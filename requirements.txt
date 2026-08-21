@@ -1,0 +1,4 @@
+# Reproduction verified with Python 3.13: pandas 3.0.5, scikit-learn 1.7.2, matplotlib 3.11.1
+pandas>=2.2
+scikit-learn>=1.7,<1.8  # capped below 1.8, where penalty='l1' (used in the transcribed listing) is deprecated
+matplotlib>=3.8

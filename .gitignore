@@ -1,0 +1,14 @@
+# Environments
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Generated outputs (recreated by running the pipeline)
+data/heart_cleaned.csv
+docs/img/repro_*.png
