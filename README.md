@@ -2,7 +2,7 @@
 
 L1-penalised (LASSO) logistic regression on the UCI Cleveland heart-disease dataset — **0.850 test accuracy, 0.821 recall**, with the penalty identifying which clinical measurements matter most.
 
-Imperial College London, MEng Design Engineering — Year 1 data-science coursework. Group project with Harrick Lee, Joyce Shen and Shivapriya Peram; this repository contains my individual section (logistic regression with LASSO). The group report compared four models on the same cleaned dataset (LASSO logistic regression, decision tree, support vector machine, random forest); only the LASSO section is reproduced here.
+Imperial College London, MEng Design Engineering — Year 1 data-science group coursework. The group report compared four models on the same cleaned dataset (LASSO logistic regression, decision tree, support vector machine, random forest); only the LASSO section is reproduced here.
 
 ## Research question
 
