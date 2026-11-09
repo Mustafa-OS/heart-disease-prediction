@@ -1,10 +1,25 @@
-# Heart-Disease Prediction with LASSO Logistic Regression
+# 🫀 Heart Disease Prediction
 
-L1-penalised (LASSO) logistic regression on the UCI Cleveland heart-disease dataset — **0.850 test accuracy, 0.821 recall**, with the penalty identifying which clinical measurements matter most.
+**Can routine clinical tests predict heart disease, and which tests matter most? A LASSO logistic regression model that answers both: 85% test accuracy, using 10 of 13 measurements.**
 
-Imperial College London, MEng Design Engineering — Year 1 data-science group coursework. The group report compared four models on the same cleaned dataset (LASSO logistic regression, decision tree, support vector machine, random forest); only the LASSO section is reproduced here.
+Python · scikit-learn · pandas · matplotlib · Imperial College London, Year 1 data-science coursework
 
-## Research question
+![Training and validation accuracy as C is varied, with the selected C = 0.3 marked](docs/img/fig1_accuracy_vs_c.png)
+
+## At a glance
+
+| Test set (60 patients) | Score |
+|---|---|
+| Accuracy | **0.850** |
+| Recall (diseased patients correctly caught) | **0.821** |
+| Precision | **0.852** |
+
+- 🧹 **Caught two serious problems in the public dataset:** 70% of its rows were duplicates (which inflates every score), and its disease labels were flipped. Both fixed before training.
+- 🎯 **Tuned for recall,** because missing a sick patient is far worse than a false alarm.
+- 🔍 **Explains itself:** LASSO switched off 3 of 13 measurements, and the strongest remaining predictors (blocked arteries, stress-test results) match established cardiology.
+- ♻️ **Fully reproducible:** running the code reproduces the report's results exactly, to three decimal places.
+
+## The question
 
 > Can the presence of heart disease be predicted from routine clinical measurements, and which indicators are the strongest predictors?
 
@@ -67,7 +82,17 @@ The strongest predictors are consistent with established cardiology: `ca` direct
 - A recall of 0.821 still means roughly one diseased patient in five would be missed — useful as an aid to doctors, but well short of what independent clinical use would require.
 - The dataset omits major risk factors such as smoking and family history, which limits how far the findings generalise.
 
-## Repository structure
+## Run it
+
+```bash
+python3 -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+python src/prepare_data.py     # data/heart.csv -> data/heart_cleaned.csv (296 rows)
+python src/lasso_pipeline.py   # tuning curves + final test metrics
+```
+
+<details>
+<summary><b>Repository structure</b></summary>
 
 ```
 ├── data/heart.csv          # raw Kaggle/UCI dataset (1,025 rows)
@@ -79,19 +104,14 @@ The strongest predictors are consistent with established cardiology: `ca` direct
 
 `src/lasso_pipeline.py` is transcribed from my code listing in the report appendix, with two minimal adaptations so it runs headless from this repository: the input path, and figures saved to `docs/img/` instead of shown interactively. `src/prepare_data.py` reimplements the cleaning step described in the group methodology.
 
-## Running it
+</details>
 
-```bash
-python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-python src/prepare_data.py     # data/heart.csv -> data/heart_cleaned.csv (296 rows)
-python src/lasso_pipeline.py   # tuning curves + final test metrics
-```
+## About
 
-## Acknowledgements
+Year 1 group coursework for MEng Design Engineering at Imperial College London. The group compared four models (LASSO logistic regression, decision tree, SVM, random forest) on the same cleaned data. This repository reproduces the LASSO section, which was my part.
 
 Dataset: [Heart Disease (Cleveland), UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/45/heart+disease) (Detrano et al.), obtained through Kaggle.
 
 ---
 
-Built by Mustafa Suleman — MEng Design Engineering, Imperial College London · [LinkedIn](https://www.linkedin.com/in/mustafaosuleman/)
+<sub>Built by <b>Mustafa Suleman</b>, MEng Design Engineering, Imperial College London · <a href="https://github.com/Mustafa-OS">More projects</a> · <a href="https://www.linkedin.com/in/mustafaosuleman/">LinkedIn</a></sub>
