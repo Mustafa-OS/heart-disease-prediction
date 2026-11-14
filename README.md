@@ -1,6 +1,6 @@
-# 🫀 Heart Disease Prediction
+# Heart Disease Prediction
 
-**Can routine clinical tests predict heart disease, and which tests matter most? A LASSO logistic regression model that answers both: 85% test accuracy, using 10 of 13 measurements.**
+Can routine clinical tests predict heart disease, and which tests matter most? I used LASSO logistic regression to answer both. It gets 85% accuracy on the test set using 10 of the 13 measurements.
 
 Python · scikit-learn · pandas · matplotlib · Imperial College London, Year 1 data-science coursework
 
@@ -14,10 +14,10 @@ Python · scikit-learn · pandas · matplotlib · Imperial College London, Year 
 | Recall (diseased patients correctly caught) | **0.821** |
 | Precision | **0.852** |
 
-- 🧹 **Caught two serious problems in the public dataset:** 70% of its rows were duplicates (which inflates every score), and its disease labels were flipped. Both fixed before training.
-- 🎯 **Tuned for recall,** because missing a sick patient is far worse than a false alarm.
-- 🔍 **Explains itself:** LASSO switched off 3 of 13 measurements, and the strongest remaining predictors (blocked arteries, stress-test results) match established cardiology.
-- ♻️ **Fully reproducible:** running the code reproduces the report's results exactly, to three decimal places.
+- The public dataset had two serious problems: 70% of its rows were duplicates, which inflates every score, and its disease labels were the wrong way round. I fixed both before training.
+- The model is tuned for recall, because missing a sick patient is much worse than a false alarm.
+- LASSO dropped 3 of the 13 measurements, and the strongest predictors left (blocked arteries, stress-test results) match what's already known in cardiology.
+- Running the code reproduces the report's results exactly, to three decimal places.
 
 ## The question
 
@@ -25,20 +25,20 @@ Python · scikit-learn · pandas · matplotlib · Imperial College London, Year 
 
 ## Dataset and cleaning
 
-The data is the UCI Cleveland Heart Disease dataset, obtained through Kaggle (`data/heart.csv`): 1,025 rows with 13 clinical and demographic predictors and a binary target. The raw file needed more care than it first appeared:
+The data is the UCI Cleveland Heart Disease dataset, obtained through Kaggle (`data/heart.csv`): 1,025 rows with 13 clinical and demographic predictors and a binary target. The raw file turned out to need a fair bit of cleaning:
 
-- **1,025 → 302 rows** — exact duplicates removed. The Kaggle file upsamples roughly 300 real patients to 1,025 rows; left in place, the duplicates leak identical patients across the train/test boundary and inflate every metric.
-- **302 → 296 rows** — records with out-of-range category codes removed (`thal = 0` and `ca = 4` encode missing values).
-- **Inverted target fixed** — the 0/1 labels in the raw file are swapped relative to the documentation on Kaggle, so a model trained on it naively predicts the opposite of what the labels claim to mean. The cleaning step swaps them back; after the fix, `target = 1` means disease present (46% of the cleaned records).
+- **1,025 → 302 rows**: exact duplicates removed. The Kaggle file upsamples roughly 300 real patients to 1,025 rows; left in place, the duplicates leak identical patients across the train/test boundary and inflate every metric.
+- **302 → 296 rows**: records with out-of-range category codes removed (`thal = 0` and `ca = 4` encode missing values).
+- **Inverted target fixed**: the 0/1 labels in the raw file are swapped relative to the documentation on Kaggle, so a model trained on it naively predicts the opposite of what the labels claim to mean. The cleaning step swaps them back; after the fix, `target = 1` means disease present (46% of the cleaned records).
 
 `src/prepare_data.py` reproduces this cleaning and writes `data/heart_cleaned.csv`.
 
 ## Method
 
-1. **Split** — 60/20/20 stratified train/validation/test split (177/59/60 patients), fixed random seed 42, so the 46% disease rate is preserved in each subset and the split is reproducible.
-2. **Standardise** — `StandardScaler` fitted on the training set only, then applied to the validation and test sets. (The L1 penalty depends on coefficient size, so features must be on a common scale.)
-3. **Tune** — logistic regression with an L1 penalty (`liblinear` solver), sweeping C from 0.01 to 10 and scoring accuracy and recall on the validation set. Recall matters most here: a false negative (a missed diagnosis) is far costlier than a false positive.
-4. **Select and test** — C = 0.3 chosen as the smallest value that performed well on both validation metrics; the final model was refitted at C = 0.3 and evaluated once on the held-back test set.
+1. **Split**: 60/20/20 stratified train/validation/test split (177/59/60 patients), fixed random seed 42, so the 46% disease rate is preserved in each subset and the split is reproducible.
+2. **Standardise**: `StandardScaler` fitted on the training set only, then applied to the validation and test sets. (The L1 penalty depends on coefficient size, so features must be on a common scale.)
+3. **Tune**: logistic regression with an L1 penalty (`liblinear` solver), sweeping C from 0.01 to 10 and scoring accuracy and recall on the validation set. Recall matters most here: a false negative (a missed diagnosis) is far costlier than a false positive.
+4. **Select and test**: C = 0.3 chosen as the smallest value that performed well on both validation metrics; the final model was refitted at C = 0.3 and evaluated once on the held-back test set.
 
 ![Training and validation accuracy as C is varied, with the selected C = 0.3 marked](docs/img/fig1_accuracy_vs_c.png)
 
@@ -54,7 +54,7 @@ Coursework results are from the group report; the reproduction column is what `s
 | Recall    | 0.821 | 0.821 |
 | Precision | 0.852 | 0.852 |
 
-The reproduction matches the report exactly to the three decimal places quoted, including the training set (0.887 accuracy), the validation set (0.847) and the test-set confusion matrix: 23 true positives, 5 false negatives, 4 false positives, 28 true negatives. Test performance sits only slightly below training performance, indicating little overfitting.
+The reproduction matches the report exactly to the three decimal places quoted, including the training set (0.887 accuracy), the validation set (0.847) and the test-set confusion matrix: 23 true positives, 5 false negatives, 4 false positives, 28 true negatives. Test performance is only slightly below training performance, so there's little overfitting.
 
 ### What LASSO kept
 
@@ -74,12 +74,12 @@ The penalty reduced the model from thirteen features to ten, driving the coeffic
 | `cp` — chest-pain type | −0.62 |
 | `age`, `fbs`, `restecg` | 0 (removed) |
 
-The strongest predictors are consistent with established cardiology: `ca` directly measures arterial narrowing, and a fitter heart reaches a higher maximum rate, so `thalach` lowering predicted risk is expected. The negative `cp` coefficient looks counterintuitive but follows from the dataset's encoding, where the lowest category is typical angina — the chest-pain type most strongly associated with heart disease.
+The strongest predictors are consistent with established cardiology: `ca` directly measures arterial narrowing, and a fitter heart reaches a higher maximum rate, so `thalach` lowering predicted risk is expected. The negative `cp` coefficient looks counterintuitive but follows from the dataset's encoding, where the lowest category is typical angina, the chest-pain type most strongly linked to heart disease.
 
 ## Limitations
 
 - The test set contains only 60 patients, so the performance estimates carry real uncertainty and could shift with a different split.
-- A recall of 0.821 still means roughly one diseased patient in five would be missed — useful as an aid to doctors, but well short of what independent clinical use would require.
+- A recall of 0.821 still means roughly one diseased patient in five would be missed. That could help a doctor, but it's well short of what you'd need to use it on its own in a clinic.
 - The dataset omits major risk factors such as smoking and family history, which limits how far the findings generalise.
 
 ## Run it
